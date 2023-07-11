@@ -4,12 +4,11 @@ import { AppBar, Avatar } from '@react-native-material/core';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import Modal from 'react-native-modal';
-import numeral from 'numeral';
 
 
 const Crud = () => {
   const [arr, setArr] = useState([]);
-  let host = '192.168.137.224:5000';
+  let host = '192.168.43.224:5000';
 
   const [id, setId] = useState('');
 
@@ -69,7 +68,7 @@ const Crud = () => {
     try {
       const response = await axios.get(`http://${host}/listEmployees`);
       const data = response.data;
-      setArr(data.map((item) => ({ ...item, menuVisible: false }))); // Set initial menuVisible value to false for each item
+      setArr(data.map((item) => ({ ...item, menuVisible: false })));
     } catch (error) {
       console.error('An error occurred:', error.message);
     }
@@ -86,16 +85,19 @@ const Crud = () => {
       min: response.data[0].min,
       max: response.data[0].max,
     });
-    Alert.alert("info",response.data[0].min)
   };
 
-  const deleteE = async () => {
-    const id = id
 
-    //const response = await axios.delete(`http://${host}/delEmployee/${id}`);
-    Alert.alert('Info', id);
-    //listE();
-    //getSalaires();
+  const idDel = async (id) => {
+    setId(id)
+  }
+
+  const deleteE = async () => {
+
+    const response = await axios.delete(`http://${host}/delEmployee/${id}`);
+    Alert.alert('Info', response.data);
+    listE();
+    getSalaires();
   };
 
   useEffect(() => {
@@ -177,11 +179,10 @@ const Crud = () => {
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                padding: 12,
-                margin: 5,
+                padding: 18,
               }}
             >
-              <Avatar label={a.nom_employee} color="#123456" style={{ marginRight: 12 }} />
+              <Avatar label={a.nom_employee} color="#123456" style={{ marginRight: 25 }} />
               <View
                 style={{
                   display: 'flex',
@@ -228,7 +229,7 @@ const Crud = () => {
                     <TouchableOpacity
                       onPress={() => {
                         openDialog3()
-                        setId(a.id_employee)
+                        idDel(a.id_employee)
                         toggleMenu(index);
                       }}
                       style={{ padding: 10 }}
@@ -238,7 +239,7 @@ const Crud = () => {
                   </View>
                 )}
                 <TouchableOpacity onPress={() => toggleMenu(index)} style={{ width: 60, height: 50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name="ellipsis-v" size={24} style={{ marginRight: 25 }} />
+                  <Icon name="ellipsis-v" size={24} style={{ marginRight: 40 }} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -254,18 +255,20 @@ const Crud = () => {
 
             <Text style={{ fontSize: 16, marginBottom: 8 }}>Name</Text>
             <TextInput
+              placeholder='Ex: John Doe'
               style={{ borderWidth: 1, borderColor: 'gray', padding: 8, marginBottom: 16 }}
               onChangeText={(value) => handleChange('nom', value)}
               value={employeeInfo.nom}
             />
             <Text style={{ fontSize: 16, marginBottom: 8 }}>Salary</Text>
             <TextInput
+              placeholder='Ex: 250000'
               style={{ borderWidth: 1, borderColor: 'gray', padding: 8, marginBottom: 16 }}
               onChangeText={(value) => handleChange('salaire', value)}
               value={employeeInfo.salaire}
             />
 
-            <TouchableOpacity style={{ backgroundColor: 'blue', padding: 8, borderRadius: 4 }} onPress={insertE}>
+            <TouchableOpacity style={{ backgroundColor: 'green', padding: 8, borderRadius: 4 }} onPress={insertE}>
               <Text style={{ color: 'white', textAlign: 'center' }}>Confirm</Text>
             </TouchableOpacity>
           </View>
@@ -291,7 +294,7 @@ const Crud = () => {
               value={employeeNewInfo.salaire.toString()}
             />
 
-            <TouchableOpacity style={{ backgroundColor: 'blue', padding: 8, borderRadius: 4 }} onPress={modifyE}>
+            <TouchableOpacity style={{ backgroundColor: 'green', padding: 8, borderRadius: 4 }} onPress={modifyE}>
               <Text style={{ color: 'white', textAlign: 'center' }}>Confirm</Text>
             </TouchableOpacity>
           </View>
@@ -304,16 +307,16 @@ const Crud = () => {
               <Icon name="times" size={30} onPress={closeDialog3} />
             </View>
 
-            <Text style={{fontSize:17, margin:10}} >Are you sure you want to delete this record?</Text>
-            <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-around'}}>
-              <TouchableOpacity style={{ backgroundColor: 'green', padding: 8, borderRadius: 4 }} onPress={deleteE}>
-                <Text style={{ color: 'white', textAlign: 'center', width:100 }} >Yes</Text>
+            <Text style={{ fontSize: 17, margin: 10 }} >Are you sure you want to delete this record?</Text>
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
+              <TouchableOpacity style={{ backgroundColor: 'green', padding: 8, borderRadius: 4 }} onPress={() => { deleteE(); closeDialog3() }}>
+                <Text style={{ color: 'white', textAlign: 'center', width: 100 }} >Yes</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{ backgroundColor: 'red', padding: 8, borderRadius: 4 }} onPress={closeDialog3} >
-                <Text style={{ color: 'white', textAlign: 'center', width:100 }}>No</Text>
+                <Text style={{ color: 'white', textAlign: 'center', width: 100 }}>No</Text>
               </TouchableOpacity>
             </View>
-            
+
           </View>
         </Modal>
       </View>
